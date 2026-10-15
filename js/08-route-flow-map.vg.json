@@ -1,0 +1,400 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 550,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "config": {
+    "background": "transparent",
+    "font": "Arial",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelColor": "#5c6e7a",
+      "titleColor": "#172e42",
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titlePadding": 12,
+      "gridColor": "#e1e7e7",
+      "domain": false,
+      "tickColor": "#e1e7e7",
+      "labelPadding": 6
+    },
+    "legend": {
+      "labelColor": "#5c6e7a",
+      "titleColor": "#172e42",
+      "labelFontSize": 11,
+      "titleFontSize": 12,
+      "titlePadding": 8,
+      "titleLimit": 450,
+      "labelLimit": 200,
+      "padding": 10,
+      "orient": "bottom"
+    },
+    "title": {
+      "anchor": "start",
+      "fontSize": 15,
+      "color": "#172e42",
+      "fontWeight": 600
+    },
+    "text": {
+      "font": "Arial",
+      "color": "#172e42"
+    }
+  },
+  "projection": {
+    "type": "albers",
+    "rotate": [
+      -134,
+      0,
+      0
+    ],
+    "center": [
+      0,
+      -27
+    ],
+    "parallels": [
+      -18,
+      -36
+    ]
+  },
+  "params": [
+    {
+      "name": "Hub",
+      "value": "All airports",
+      "bind": {
+        "input": "select",
+        "options": [
+          "All airports",
+          "Sydney",
+          "Melbourne",
+          "Brisbane",
+          "Perth",
+          "Adelaide",
+          "Cairns",
+          "Canberra",
+          "Darwin",
+          "Hobart"
+        ],
+        "name": "Routes connected to: "
+      }
+    },
+    {
+      "name": "RouteLimit",
+      "value": 15,
+      "bind": {
+        "input": "range",
+        "min": 5,
+        "max": 62,
+        "step": 1,
+        "name": "Maximum routes: "
+      }
+    }
+  ],
+  "layer": [
+    {
+      "data": {
+        "url": "data/australia.geojson",
+        "format": {
+          "type": "json",
+          "property": "features"
+        }
+      },
+      "mark": {
+        "type": "geoshape",
+        "fill": "#e8efed",
+        "stroke": "#fff",
+        "strokeWidth": 1.5
+      }
+    },
+    {
+      "data": {
+        "url": "data/routes.json"
+      },
+      "transform": [
+        {
+          "filter": "datum.year == 2026"
+        },
+        {
+          "filter": "Hub == 'All airports' || datum.origin == Hub || datum.destination == Hub"
+        },
+        {
+          "window": [
+            {
+              "op": "row_number",
+              "as": "visible_rank"
+            }
+          ],
+          "sort": [
+            {
+              "field": "passengers",
+              "order": "descending"
+            }
+          ]
+        },
+        {
+          "filter": "datum.visible_rank <= RouteLimit"
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "filled": false,
+        "stroke": "#087f8c",
+        "opacity": 0.6
+      },
+      "encoding": {
+        "shape": {
+          "field": "geometry",
+          "type": "geojson"
+        },
+        "strokeWidth": {
+          "field": "passengers",
+          "type": "quantitative",
+          "title": "Passenger trips (both directions)",
+          "scale": {
+            "type": "linear",
+            "domain": [
+              0,
+              8100000
+            ],
+            "range": [
+              0.6,
+              9
+            ]
+          },
+          "legend": {
+            "symbolType": "stroke",
+            "symbolSize": 450,
+            "values": [
+              1000000,
+              4000000,
+              8000000
+            ],
+            "format": ".2s"
+          }
+        },
+        "tooltip": [
+          {
+            "field": "route",
+            "title": "Route"
+          },
+          {
+            "field": "passengers",
+            "title": "Passenger trips, 2025-26",
+            "format": ","
+          },
+          {
+            "field": "flights",
+            "title": "Aircraft trips (including cargo)",
+            "format": ","
+          },
+          {
+            "field": "load_factor",
+            "title": "Seat utilisation",
+            "format": ".1%"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "airport": "Sydney",
+            "iata": "SYD",
+            "state": "NSW",
+            "lat": -33.9461,
+            "lon": 151.177,
+            "location_name": "Sydney Kingsford Smith International Airport",
+            "ident": "YSSY"
+          },
+          {
+            "airport": "Melbourne",
+            "iata": "MEL",
+            "state": "VIC",
+            "lat": -37.67073,
+            "lon": 144.8379,
+            "location_name": "Melbourne Airport",
+            "ident": "YMML"
+          },
+          {
+            "airport": "Brisbane",
+            "iata": "BNE",
+            "state": "QLD",
+            "lat": -27.3842,
+            "lon": 153.117,
+            "location_name": "Brisbane International Airport",
+            "ident": "YBBN"
+          },
+          {
+            "airport": "Perth",
+            "iata": "PER",
+            "state": "WA",
+            "lat": -31.9403,
+            "lon": 115.967,
+            "location_name": "Perth International Airport",
+            "ident": "YPPH"
+          },
+          {
+            "airport": "Adelaide",
+            "iata": "ADL",
+            "state": "SA",
+            "lat": -34.94751,
+            "lon": 138.53339,
+            "location_name": "Adelaide International Airport",
+            "ident": "YPAD"
+          },
+          {
+            "airport": "Cairns",
+            "iata": "CNS",
+            "state": "QLD",
+            "lat": -16.87892,
+            "lon": 145.74948,
+            "location_name": "Cairns International Airport",
+            "ident": "YBCS"
+          },
+          {
+            "airport": "Hobart",
+            "iata": "HBA",
+            "state": "TAS",
+            "lat": -42.83703,
+            "lon": 147.51302,
+            "location_name": "Hobart International Airport",
+            "ident": "YMHB"
+          },
+          {
+            "airport": "Darwin",
+            "iata": "DRW",
+            "state": "NT",
+            "lat": -12.41497,
+            "lon": 130.88185,
+            "location_name": "Darwin International Airport / RAAF Darwin",
+            "ident": "YPDN"
+          }
+        ]
+      },
+      "mark": {
+        "type": "circle",
+        "size": 25,
+        "color": "#264d73"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "lon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "lat",
+          "type": "quantitative"
+        },
+        "tooltip": [
+          {
+            "field": "airport"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "airport": "Sydney",
+            "iata": "SYD",
+            "state": "NSW",
+            "lat": -33.9461,
+            "lon": 151.177,
+            "location_name": "Sydney Kingsford Smith International Airport",
+            "ident": "YSSY"
+          },
+          {
+            "airport": "Melbourne",
+            "iata": "MEL",
+            "state": "VIC",
+            "lat": -37.67073,
+            "lon": 144.8379,
+            "location_name": "Melbourne Airport",
+            "ident": "YMML"
+          },
+          {
+            "airport": "Brisbane",
+            "iata": "BNE",
+            "state": "QLD",
+            "lat": -27.3842,
+            "lon": 153.117,
+            "location_name": "Brisbane International Airport",
+            "ident": "YBBN"
+          },
+          {
+            "airport": "Perth",
+            "iata": "PER",
+            "state": "WA",
+            "lat": -31.9403,
+            "lon": 115.967,
+            "location_name": "Perth International Airport",
+            "ident": "YPPH"
+          },
+          {
+            "airport": "Adelaide",
+            "iata": "ADL",
+            "state": "SA",
+            "lat": -34.94751,
+            "lon": 138.53339,
+            "location_name": "Adelaide International Airport",
+            "ident": "YPAD"
+          },
+          {
+            "airport": "Cairns",
+            "iata": "CNS",
+            "state": "QLD",
+            "lat": -16.87892,
+            "lon": 145.74948,
+            "location_name": "Cairns International Airport",
+            "ident": "YBCS"
+          },
+          {
+            "airport": "Hobart",
+            "iata": "HBA",
+            "state": "TAS",
+            "lat": -42.83703,
+            "lon": 147.51302,
+            "location_name": "Hobart International Airport",
+            "ident": "YMHB"
+          },
+          {
+            "airport": "Darwin",
+            "iata": "DRW",
+            "state": "NT",
+            "lat": -12.41497,
+            "lon": 130.88185,
+            "location_name": "Darwin International Airport / RAAF Darwin",
+            "ident": "YPDN"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 10,
+        "dy": -9,
+        "fontSize": 12,
+        "fontWeight": 600
+      },
+      "encoding": {
+        "longitude": {
+          "field": "lon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "lat",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "airport"
+        }
+      }
+    }
+  ]
+}
